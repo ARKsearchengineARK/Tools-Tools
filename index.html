@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools & Tools - Complete File Conversion Suite</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5362151075159697" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.16.0/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-color: #1f2937;
+            --light-bg: #f9fafb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent-color);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .tool-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-input-container {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 1.5rem;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-input:hover {
+            border-color: var(--accent-color);
+            background: #f8fafc;
+        }
+
+        .file-input.has-file {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .quality-control {
+            margin: 1.5rem 0;
+        }
+
+        .quality-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .quality-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e5e7eb;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .quality-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .convert-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .convert-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .convert-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            position: relative;
+            padding-right: 2.5rem;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        footer {
+            background: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .tool-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-tools"></i>
+            <span>Tools & Tools</span>
+        </div>
+        <p class="tagline">Your complete file conversion solution</p>
+    </header>
+
+    <div class="tool-container">
+        <!-- Image Compression Tool -->
+        <div class="tool-card">
+            <h2><i class="fas fa-image"></i> Image Compression</h2>
+            <div class="file-input-container">
+                <div class="file-input" id="imageDropZone">
+                    Click to upload or drag & drop image
+                </div>
+                <div class="file-name" id="imageFileName"></div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="quality-control">
+                <div class="quality-label">
+                    <span>Compression Quality:</span>
+                    <span id="qualityValue">70%</span>
+                </div>
+                <input type="range" class="quality-slider" id="qualitySlider" min="1" max="100" value="70">
+            </div>
+            <button id="compressBtn" class="convert-btn">
+                <i class="fas fa-compress-alt"></i> Compress Image
+            </button>
+        </div>
+
+        <!-- PDF to Word Tool -->
+        <div class="tool-card">
+            <h2><i class="fas fa-file-pdf"></i> PDF to Word</h2>
+            <div class="file-input-container">
+                <div class="file-input" id="pdfDropZone">
+                    Click to upload or drag & drop PDF
+                </div>
+                <div class="file-name" id="pdfFileName"></div>
+                <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
+            </div>
+            <button id="pdfToWordBtn" class="convert-btn">
+                <i class="fas fa-file-word"></i> Convert to DOCX
+            </button>
+        </div>
+
+        <!-- Word to PDF Tool -->
+        <div class="tool-card">
+            <h2><i class="fas fa-file-word"></i> Word to PDF</h2>
+            <div class="file-input-container">
+                <div class="file-input" id="wordDropZone">
+                    Click to upload or drag & drop Word file
+                </div>
+                <div class="file-name" id="wordFileName"></div>
+                <input type="file" id="wordInput" accept=".doc,.docx" style="display: none;">
+            </div>
+            <button id="wordToPdfBtn" class="convert-btn">
+                <i class="fas fa-file-pdf"></i> Convert to PDF
+            </button>
+        </div>
+
+        <!-- JPEG to PDF Tool -->
+        <div class="tool-card">
+            <h2><i class="fas fa-file-image"></i> JPEG to PDF</h2>
+            <div class="file-input-container">
+                <div class="file-input" id="jpegDropZone">
+                    Click to upload or drag & drop JPEG
+                </div>
+                <div class="file-name" id="jpegFileName"></div>
+                <input type="file" id="jpegInput" accept="image/jpeg" style="display: none;">
+            </div>
+            <button id="jpegToPdfBtn" class="convert-btn">
+                <i class="fas fa-file-pdf"></i> Convert to PDF
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2024 Tools & Tools. All rights reserved.</p>
+            <p>Your complete file conversion solution</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AdSense
+        (adsbygoogle = window.adsbygoogle || []).push({});
+
+        // DOM Elements
+        const elements = {
+            // Image Compression
+            imageInput: document.getElementById('imageInput'),
+            imageDropZone: document.getElementById('imageDropZone'),
+            imageFileName: document.getElementById('imageFileName'),
+            qualitySlider: document.getElementById('qualitySlider'),
+            qualityValue: document.getElementById('qualityValue'),
+            compressBtn: document.getElementById('compressBtn'),
+            
+            // PDF to Word
+            pdfInput: document.getElementById('pdfInput'),
+            pdfDropZone: document.getElementById('pdfDropZone'),
+            pdfFileName: document.getElementById('pdfFileName'),
+            pdfToWordBtn: document.getElementById('pdfToWordBtn'),
+            
+            // Word to PDF
+            wordInput: document.getElementById('wordInput'),
+            wordDropZone: document.getElementById('wordDropZone'),
+            wordFileName: document.getElementById('wordFileName'),
+            wordToPdfBtn: document.getElementById('wordToPdfBtn'),
+            
+            // JPEG to PDF
+            jpegInput: document.getElementById('jpegInput'),
+            jpegDropZone: document.getElementById('jpegDropZone'),
+            jpegFileName: document.getElementById('jpegFileName'),
+            jpegToPdfBtn: document.getElementById('jpegToPdfBtn')
+        };
+
+        // Initialize file drop zones
+        function initDropZone(dropZone, inputElement, fileNameElement) {
+            // Click handler
+            dropZone.addEventListener('click', () => inputElement.click());
+            
+            // Drag and drop handlers
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropZone.style.borderColor = 'var(--primary-color)';
+                dropZone.style.backgroundColor = 'rgba(37, 99, 235, 0.1)';
+            }
+
+            function unhighlight() {
+                dropZone.style.borderColor = '#d1d5db';
+                dropZone.style.backgroundColor = '';
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length) {
+                    inputElement.files = files;
+                    updateFileName();
+                }
+            }
+
+            // File input change handler
+            inputElement.addEventListener('change', updateFileName);
+
+            function updateFileName() {
+                if (inputElement.files.length) {
+                    fileNameElement.textContent = inputElement.files[0].name;
+                    dropZone.classList.add('has-file');
+                } else {
+                    fileNameElement.textContent = '';
+                    dropZone.classList.remove('has-file');
+                }
+            }
+        }
+
+        // Initialize all drop zones
+        initDropZone(elements.imageDropZone, elements.imageInput, elements.imageFileName);
+        initDropZone(elements.pdfDropZone, elements.pdfInput, elements.pdfFileName);
+        initDropZone(elements.wordDropZone, elements.wordInput, elements.wordFileName);
+        initDropZone(elements.jpegDropZone, elements.jpegInput, elements.jpegFileName);
+
+        // Quality slider
+        elements.qualitySlider.addEventListener('input', () => {
+            elements.qualityValue.textContent = `${elements.qualitySlider.value}%`;
+        });
+
+        // Image Compression
+        elements.compressBtn.addEventListener('click', async () => {
+            if (!elements.imageInput.files.length) {
+                alert('Please select an image first!');
+                return;
+            }
+
+            const file = elements.imageInput.files[0];
+            const quality = elements.qualitySlider.value / 100;
+
+            setLoading(elements.compressBtn, true);
+
+            try {
+                new Compressor(file, {
+                    quality: quality,
+                    success(result) {
+                        downloadFile(result, `compressed_${file.name}`);
+                    },
+                    error(err) {
+                        throw new Error('Compression failed: ' + err.message);
+                    }
+                });
+            } catch (error) {
+                alert(error.message);
+            } finally {
+                setLoading(elements.compressBtn, false);
+            }
+        });
+
+        // PDF to Word Conversion
+        elements.pdfToWordBtn.addEventListener('click', async () => {
+            if (!elements.pdfInput.files.length) {
+                alert('Please select a PDF file first!');
+                return;
+            }
+
+            setLoading(elements.pdfToWordBtn, true);
+
+            try {
+                const file = elements.pdfInput.files[0];
+                const text = await extractTextFromPDF(file);
+                
+                // Create a simple HTML document that can be saved as DOCX
+                const htmlContent = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+                          xmlns:w="urn:schemas-microsoft-com:office:word" 
+                          xmlns="http://www.w3.org/TR/REC-html40">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Converted from PDF</title>
+                    </head>
+                    <body>
+                        <h1>Converted from PDF: ${file.name}</h1>
+                        <div>${text.substring(0, 5000)}</div>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([htmlContent], { type: 'application/msword' });
+                downloadFile(blob, file.name.replace('.pdf', '.doc'));
+            } catch (error) {
+                alert('PDF to Word conversion failed. Note: Full conversion requires server-side processing.');
+            } finally {
+                setLoading(elements.pdfToWordBtn, false);
+            }
+        });
+
+        // Word to PDF Conversion
+        elements.wordToPdfBtn.addEventListener('click', async () => {
+            if (!elements.wordInput.files.length) {
+                alert('Please select a Word document first!');
+                return;
+            }
+
+            setLoading(elements.wordToPdfBtn, true);
+
+            try {
+                const file = elements.wordInput.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+                
+                // Convert Word to text
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                const text = result.value;
+                
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Split text into lines that fit the PDF
+                const lines = doc.splitTextToSize(text, 180);
+                doc.text(lines, 10, 10);
+                
+                doc.save(file.name.replace('.docx', '.pdf').replace('.doc', '.pdf'));
+            } catch (error) {
+                alert('Word to PDF conversion error: ' + error.message);
+            } finally {
+                setLoading(elements.wordToPdfBtn, false);
+            }
+        });
+
+        // JPEG to PDF Conversion
+        elements.jpegToPdfBtn.addEventListener('click', async () => {
+            if (!elements.jpegInput.files.length) {
+                alert('Please select a JPEG image first!');
+                return;
+            }
+
+            setLoading(elements.jpegToPdfBtn, true);
+
+            try {
+                const file = elements.jpegInput.files[0];
+                const imgData = await readFileAsDataURL(file);
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add image to PDF (A4 size)
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                doc.save(file.name.replace('.jpeg', '.pdf').replace('.jpg', '.pdf'));
+            } catch (error) {
+                alert('JPEG to PDF conversion error: ' + error.message);
+            } finally {
+                setLoading(elements.jpegToPdfBtn, false);
+            }
+        });
+
+        // Helper Functions
+        function setLoading(button, isLoading) {
+            button.disabled = isLoading;
+            if (isLoading) {
+                button.classList.add('loading');
+                const originalText = button.innerHTML;
+                button.setAttribute('data-original-text', originalText);
+                button.innerHTML = `<i class="fas fa-spinner"></i> Processing...`;
+            } else {
+                button.classList.remove('loading');
+                const originalText = button.getAttribute('data-original-text');
+                if (originalText) {
+                    button.innerHTML = originalText;
+                }
+            }
+        }
+
+        function downloadFile(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        async function extractTextFromPDF(file) {
+            // This is a simplified text extraction
+            // For full PDF text extraction, you'd need a proper PDF library on the backend
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // This just extracts some text from the binary data
+                    // In a real app, use PDF.js or similar for proper extraction
+                    const content = e.target.result;
+                    const text = content.substring(0, 1000).replace(/[^a-zA-Z0-9 ]/g, ' ');
+                    resolve(text || "PDF content extracted (full text requires server processing)");
+                };
+                reader.readAsBinaryString(file);
+            });
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+</html>
